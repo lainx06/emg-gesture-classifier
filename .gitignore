@@ -1,0 +1,5 @@
+.venv/
+grabmyo/
+*.npy
+*.parquet
+__pycache__/
