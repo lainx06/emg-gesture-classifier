@@ -1,5 +1,5 @@
 .venv/
-grabmyo/
-*.npy
-*.parquet
 __pycache__/
+data/
+cache/
+figures/
