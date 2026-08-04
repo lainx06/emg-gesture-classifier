@@ -1,5 +1,7 @@
 .venv/
-__pycache__/
 data/
 cache/
 figures/
+__pycache__/
+*.npz
+*.npy
