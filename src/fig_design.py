@@ -4,6 +4,15 @@ PNG for the presentation (16:9), PDF for the paper (single column).
 Source box is sized to its content so the three lines never collide.
 """
 
+import os
+
+# Output goes to the figures/ directory at the project root, regardless of
+# which directory this script is run from.
+OUT = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+os.makedirs(OUT, exist_ok=True)
+
+
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -132,7 +141,7 @@ def render(path, figsize, dpi, sizes, show_title=True):
 
 
 if __name__ == "__main__":
-    render("slide3_design.png", (13.333, 7.5), 200,
+    render(os.path.join(OUT, "slide3_design.png"), (13.333, 7.5), 200,
            sizes=(21, 15, 14, 14, 12), show_title=True)
-    render("fig_design.pdf", (7.16, 4.6), 300,
+    render(os.path.join(OUT, "fig_design.pdf"), (7.16, 4.6), 300,
            sizes=(11, 9.5, 9, 9, 8), show_title=False)

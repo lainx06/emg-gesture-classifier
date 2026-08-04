@@ -6,6 +6,15 @@ conditions are muted, spatial conditions are highlighted, so the pattern
 reads before anyone parses a number or an axis direction.
 """
 
+import os
+
+# Output goes to the figures/ directory at the project root, regardless of
+# which directory this script is run from.
+OUT = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+os.makedirs(OUT, exist_ok=True)
+
+
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -85,9 +94,9 @@ def render(path, figsize, dpi, s, suptitle=None):
 
 
 if __name__ == "__main__":
-    render("slide4_ablation.png", (13.333, 7.0), 200,
+    render(os.path.join(OUT, "slide4_ablation.png"), (13.333, 7.0), 200,
            s={"title": 21, "panel": 17, "axlabel": 13, "tick": 14, "note": 12},
            suptitle="Only channel count matters")
 
-    render("fig_ablation.pdf", (7.16, 3.2), 300,
+    render(os.path.join(OUT, "fig_ablation.pdf"), (7.16, 3.2), 300,
            s={"title": 11, "panel": 9.5, "axlabel": 8, "tick": 8.5, "note": 7.5})

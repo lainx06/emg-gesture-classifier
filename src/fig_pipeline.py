@@ -4,6 +4,15 @@ Box widths are computed from the longest detail line so text never spills.
 Branch positions are derived from the box grid so nothing is clipped.
 """
 
+import os
+
+# Output goes to the figures/ directory at the project root, regardless of
+# which directory this script is run from.
+OUT = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "figures")
+os.makedirs(OUT, exist_ok=True)
+
+
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -112,9 +121,9 @@ def render(path, figsize, dpi, s, show_title=True):
 
 
 if __name__ == "__main__":
-    render("slide_methods.png", (13.333, 6.6), 200,
+    render(os.path.join(OUT, "slide_methods.png"), (13.333, 6.6), 200,
            s={"title": 21, "stage": 15, "detail": 10, "note": 11.5},
            show_title=True)
-    render("fig_pipeline.pdf", (7.16, 3.6), 300,
+    render(os.path.join(OUT, "fig_pipeline.pdf"), (7.16, 3.6), 300,
            s={"title": 11, "stage": 8.5, "detail": 5.8, "note": 6.5},
            show_title=False)
