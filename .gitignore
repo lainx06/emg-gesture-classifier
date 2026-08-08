@@ -6,3 +6,9 @@ __pycache__/
 *.npz
 *.npy
 playback/
+paper/*.pdf
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.bbl
+paper/*.blg
