@@ -54,8 +54,12 @@ GESTURES = [11, 16, 17]
 GEST_MAP = {11: 0, 16: 1, 17: 2}
 TRAIN_TRIALS = [1, 2, 3, 4, 5]
 
-TEST_TRIALS = [(1, 16, 6), (1, 11, 6), (1, 17, 6),
-               (3, 16, 6), (3, 11, 6), (3, 17, 6)]
+TEST_TRIALS = [
+    (s, g, t)
+    for s in (1, 2, 3)
+    for g in (11, 16, 17)
+    for t in (6, 7)
+]
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)

@@ -17,14 +17,20 @@ already measured by export_playback.py.
 
 Predetermined criteria, fixed before any hardware result was seen:
 
-    ADC codes                 exact, verified by CRC-16 over received bytes
+    ADC codes                 exact, verified by CRC-16
     ZC counts                 exact
     window count              exact
     predictions               exact
     filter output             < 0.5 ADC LSB
     standardized features     < 1e-3 training SD
     LDA scores                rtol 1e-4, atol 1e-5, and 2E < min_margin
-                              as a sufficient worst-case argmax guarantee
+
+Additional post-hoc diagnostic:
+
+    raw continuous features   direct numerical comparison
+
+The post-hoc diagnostic was written after the initial hardware results were
+observed. It is reported but does not contribute to the verdict.
 """
 
 import argparse
@@ -210,6 +216,21 @@ def compare(key, C, ref, lsb, expect_crc=None):
         lines.append(f"  ZC mismatches      {zc_bad:9d}         "
                      f"(exact)   {'PASS' if zc_bad == 0 else 'FAIL'}")
 
+        # Post-hoc diagnostic only. Added after the initial hardware results
+        # were observed, so it is not a predetermined criterion and must not
+        # affect `ok`. Exact agreement on the standardized values would not
+        # imply it anyway: two raw values differing below the rounding
+        # threshold can map to the same float32 after (x - mean) * inv_scale.
+        cont_cols = [0, 1, 2, 4, 5, 6]
+        raw_err = float(
+            np.abs(Bf[:, cont_cols] - C["features"][:, cont_cols]).max()
+        )
+        exact = (raw_err == 0.0)
+        lines.append(
+            f"  raw features       {raw_err:9.3e}         "
+            f"{'(exact; post-hoc)' if exact else '(post-hoc diagnostic)'}"
+        )
+
         e = np.abs(Bs - C["scaled"]).max()
         p = e < TOL_STD_SD
         ok &= p
@@ -222,8 +243,11 @@ def compare(key, C, ref, lsb, expect_crc=None):
         s = np.sort(Bsc, axis=1)
         margin = float((s[:, -1] - s[:, -2]).min())
         guard = 2 * e < margin
-        lines.append(f"  LDA scores         {e:9.3e}       "
-                     f"(rtol {TOL_SCORE_RTOL})  {'PASS' if p else 'FAIL'}")
+        lines.append(
+            f"  LDA scores         {e:9.3e}       "
+            f"(rtol {TOL_SCORE_RTOL}, atol {TOL_SCORE_ATOL})  "
+            f"{'PASS' if p else 'FAIL'}"
+        )
         ok &= guard
         lines.append(f"  argmax guarantee   2E={2*e:9.3e} vs M={margin:.4f}   "
                      f"{'PASS' if guard else 'FAIL'}")
