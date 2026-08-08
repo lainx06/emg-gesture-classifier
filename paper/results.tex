@@ -1,0 +1,153 @@
+% ============================================================
+% results.tex -- single source of truth for every number.
+% Change a value here, it updates everywhere in the paper.
+% Never type a number directly into the prose.
+% ============================================================
+
+% ---------- Dataset and pipeline parameters ----------
+\newcommand{\nSubjects}{43}
+\newcommand{\nSessions}{3}
+\newcommand{\sessionDays}{1{,} 8{,} and 29}
+\newcommand{\fsClinical}{2048}
+\newcommand{\fsCommodity}{1000}
+\newcommand{\nWindows}{37}
+\newcommand{\nRows}{100{,}233}
+\newcommand{\windowMs}{200}
+\newcommand{\stepMs}{100}
+\newcommand{\transientMs}{200}
+\newcommand{\zcEpsilon}{20}          % microvolts
+\newcommand{\hpCutoff}{20}           % Hz
+
+% ---------- Channel derivation evidence ----------
+\newcommand{\rawCorr}{0.987}
+\newcommand{\bipolarCorr}{0.139}
+\newcommand{\interRingCm}{2}
+
+% ---------- Quantization ranges (mV) ----------
+\newcommand{\vmaxTwoCh}{0.3329}
+\newcommand{\vmaxEightCh}{0.6407}
+\newcommand{\vmaxEightChResampled}{0.6395}
+\newcommand{\lsbCommodity}{0.651}    % microvolts
+\newcommand{\lsbEightCh}{1.252}      % microvolts
+
+% ---------- LDA 2x2 (headline table) ----------
+\newcommand{\ldaClinWithin}{96.2\%}
+\newcommand{\ldaCommWithin}{86.1\%}
+\newcommand{\ldaClinCross}{82.5\%}
+\newcommand{\ldaCommCross}{71.4\%}
+\newcommand{\ldaClinDrop}{13.7}
+\newcommand{\ldaCommDrop}{14.7}
+\newcommand{\ldaInteractionP}{0.59}
+\newcommand{\ldaInteractionCI}{[-5.3{,} +7.2]}
+
+% ---------- Random Forest ----------
+\newcommand{\rfClinDayOne}{97.2\%}
+\newcommand{\rfClinDayEight}{91.5\%}
+\newcommand{\rfClinDayTwentyNine}{91.8\%}
+\newcommand{\rfCommDayOne}{86.9\%}
+\newcommand{\rfCommDayEight}{72.1\%}
+\newcommand{\rfCommDayTwentyNine}{73.0\%}
+\newcommand{\rfClinDrop}{5.4}
+\newcommand{\rfCommDrop}{14.0}
+\newcommand{\rfInteractionP}{0.0091}
+\newcommand{\rfInteractionCI}{[+2.8{,} +14.5]}
+\newcommand{\rfInteractionNormP}{0.0049}
+\newcommand{\bonferroniAlpha}{0.01}
+
+% ---------- Model-ceiling spread (post-hoc) ----------
+\newcommand{\clinModelSpread}{9.3}
+\newcommand{\commModelSpread}{2.3}
+\newcommand{\deployCost}{1.6}
+
+% ---------- Ablation: Day 1 difference from clinical ----------
+\newcommand{\rateDayOneDiff}{+0.16}
+\newcommand{\rateDayOneCI}{[-0.06{,} +0.58]}
+\newcommand{\depthDayOneDiff}{-0.09}
+\newcommand{\depthDayOneCI}{[-0.27{,} +0.00]}
+\newcommand{\rateDepthDayOneDiff}{+0.18}
+\newcommand{\rateDepthDayOneCI}{[-0.01{,} +0.72]}
+\newcommand{\spatialDayOneDiff}{-11.10}
+\newcommand{\spatialDayOneCI}{[-14.67{,} -8.31]}
+\newcommand{\commodityDayOneDiff}{-10.23}
+\newcommand{\commodityDayOneCI}{[-14.82{,} -7.25]}
+
+% ---------- Ablation: cross-session drop difference from clinical ----------
+\newcommand{\rateDropDiff}{-0.18}
+\newcommand{\rateDropCI}{[-1.78{,} +0.48]}
+\newcommand{\depthDropDiff}{-0.10}
+\newcommand{\depthDropCI}{[-0.29{,} +0.03]}
+\newcommand{\rateDepthDropDiff}{-0.27}
+\newcommand{\rateDepthDropCI}{[-1.88{,} +0.34]}
+\newcommand{\spatialDropDiff}{+9.09}
+\newcommand{\spatialDropCI}{[+3.32{,} +14.66]}
+\newcommand{\commodityDropDiff}{+8.57}
+\newcommand{\commodityDropCI}{[+2.78{,} +14.38]}
+
+% ---------- Commodity vs spatial-only (direct paired difference) ----------
+\newcommand{\commVsSpatialDayOne}{+0.87}
+\newcommand{\commVsSpatialDayOneCI}{[-0.67{,} +2.42]}
+\newcommand{\commVsSpatialDrop}{-0.52}
+\newcommand{\commVsSpatialDropCI}{[-3.06{,} +1.26]}
+
+% ---------- SHAP ----------
+\newcommand{\shapMigrationDayOne}{15.0\%}
+\newcommand{\shapMigrationDayTwentyNine}{14.9\%}
+\newcommand{\shapMigrationP}{0.92}
+\newcommand{\shapExcessClinical}{0.0048}
+\newcommand{\shapExcessSpatial}{0.0086}
+\newcommand{\shapExcessCommodity}{0.0131}
+\newcommand{\shapSimilarityClinical}{98.7\%}   % clinical, day 1 vs day 29
+\newcommand{\shapSimilarityCommodity}{97.8\%}  % commodity, day 1 vs day 29
+
+% ---------- Deployability (bytes) ----------
+\newcommand{\flashLDA}{172}
+\newcommand{\flashSVM}{172}
+\newcommand{\flashKNN}{18{,}379}
+\newcommand{\flashRFmin}{1{,}334}
+\newcommand{\flashRFmax}{29{,}334}
+\newcommand{\flashXGBmin}{2{,}172}
+\newcommand{\flashXGBmax}{20{,}957}
+\newcommand{\sramNaive}{1600}
+\newcommand{\sramIntSixteen}{800}
+\newcommand{\rfSizeCorr}{-0.456}
+\newcommand{\rfSizeCorrP}{0.002}
+
+% ---------- Confusion matrices and failure modes ----------
+\newcommand{\cmClinGestureError}{16.6}       % percentage points
+\newcommand{\cmClinRestError}{8.2}           % percentage points
+\newcommand{\cmCommGestureError}{55.1}       % percentage points
+\newcommand{\cmCommRestError}{26.1}          % percentage points
+\newcommand{\cmCommCloseToExt}{30.1\%}
+\newcommand{\cmCommExtToClose}{25.0\%}
+\newcommand{\cmClinRestDrop}{-1.0}
+\newcommand{\cmCommRestDrop}{-13.5}
+\newcommand{\cmRestMisclass}{17.2\%}
+\newcommand{\fOneFNineVmax}{0.1622}          % mV (from calibration)
+\newcommand{\fSixFFourteenVmax}{0.9616}      % mV (from calibration)
+
+% ---------- Embedded deployability constraints ----------
+\newcommand{\measuredFlash}{8{,}344}
+\newcommand{\flashBudget}{23{,}912}
+% HISTORICAL, from the profiling sketch. Superseded by \verifySRAM{} (479,
+% measured on the verification firmware). Do not use in the manuscript.
+%\newcommand{\measuredSRAM}{648}
+% HISTORICAL, superseded by \accumBytesMeasured{} (84, measured via sizeof).
+% Retained for reference only. Do not use in the manuscript.
+%\newcommand{\accumSRAM}{88}
+\newcommand{\wcetTick}{1{,}612}
+\newcommand{\latencyTotal}{202}
+
+% ---------- Embedded implementation verification ----------
+\newcommand{\nVerifyWindows}{666}
+\newcommand{\nVerifyTrials}{18}
+\newcommand{\nFilterSamples}{4{,}000}
+\newcommand{\abStdErr}{1.9 \times 10^{-6}}
+\newcommand{\abFiltErr}{8.9 \times 10^{-4}}
+\newcommand{\abScoreErr}{3.2 \times 10^{-5}}
+\newcommand{\abMargin}{0.0094}
+\newcommand{\subBlockBytes}{21}
+\newcommand{\accumBytesMeasured}{84}
+\newcommand{\filterStateBytes}{32}
+\newcommand{\dspStateBytes}{116}
+\newcommand{\verifySRAM}{479}
+\newcommand{\verifyFlash}{10{,}374}
