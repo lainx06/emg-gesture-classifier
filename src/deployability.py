@@ -18,7 +18,13 @@ BYTES_PER_VALUE = 4
 COMMODITY_SAMPLE_RATE_HZ = 1000
 WINDOW_MS = 200
 COMMODITY_CHANNELS = 2
-FLASH_BUDGET_BYTES = 30720 # Provisional: 32KB - ~2KB for bootloader/serial/DSP
+# Flash budget, as in the paper (Table 4). The ATmega328P has 32,768 B of flash;
+# the 512 B bootloader leaves 32,256 B for the application. The base pipeline
+# (profiling sketch: ADC, filter, accumulators, serial) measured 8,344 B, so a
+# model payload fits when base + payload <= 32,256 B, i.e. payload <= 23,912 B.
+APP_FLASH_BYTES = 32256
+BASE_PIPELINE_BYTES = 8344
+FLASH_BUDGET_BYTES = APP_FLASH_BYTES - BASE_PIPELINE_BYTES   # 23,912 B for the payload
 
 def get_models():
     return {
@@ -71,8 +77,10 @@ def sram_bytes():
     naive_bytes = samples * COMMODITY_CHANNELS * BYTES_PER_VALUE
     int16_bytes = samples * COMMODITY_CHANNELS * 2
     
-    # 50% Overlap Accumulators (Corrected for carry state overlap)
-    streaming_bytes = (43 * COMMODITY_CHANNELS) + 2 # ~88 bytes total
+    # Streaming accumulator as built in playback_verify.ino: two rotating
+    # 21-byte sub-blocks per channel (5 floats + 1 uint8), measured with sizeof.
+    sub_block_bytes = 5 * BYTES_PER_VALUE + 1
+    streaming_bytes = sub_block_bytes * 2 * COMMODITY_CHANNELS   # 84 bytes
     
     return naive_bytes, int16_bytes, streaming_bytes
 
@@ -95,7 +103,10 @@ def main():
     print(f"Optimized (int16_t):    {int16_b} bytes ({(int16_b/2048)*100:.1f}% of 2KB)")
     print(f"Overlapping Accumulator: {streaming} bytes ({(streaming/2048)*100:.1f}% of 2KB)\n")
 
-    print(f"{'Model':<8} {'Flash (Bytes)':>22} {'Fits 30KB?':>15}")
+    print(f"Payload = model parameters + scaler. Total = {BASE_PIPELINE_BYTES:,} B base "
+          f"+ payload; fits if total <= {APP_FLASH_BYTES:,} B.")
+    print("Tree payloads are estimates from node counts, not compiled code.\n")
+    print(f"{'Model':<8} {'Payload (Bytes)':>22} {'Fits?':>15}")
     print("-" * 48)
 
     for name, clf_template in get_models().items():
@@ -129,7 +140,8 @@ def main():
             fits = "Yes" if max_f <= FLASH_BUDGET_BYTES else "No"
             print(f"{name:<8} {min_f:,} - {max_f:,} {fits:>15}")
             
-    print("\n*Note: 30KB Flash budget is a provisional placeholder until final C++ compilation.")
+    print(f"\nTotal flash = {BASE_PIPELINE_BYTES:,} B + payload; "
+          f"percentages in the paper are of {APP_FLASH_BYTES:,} B.")
 
 if __name__ == "__main__":
     main()

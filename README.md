@@ -22,6 +22,8 @@ src/                     Analysis pipeline (Python)
   calibrate_vmax.py      Quantizer full-scale (V_max) calibration
   build_cache.py         Feature caches for all six conditions
   separability.py        Five-model evaluation and statistics
+  lda_contrasts.py       Four planned LDA hardware/session contrasts
+  channel_correlation.py Correlations supporting the bipolar derivation
   ablation.py            Random Forest degradation-axis comparison
   stats_check.py         Bootstrap confidence intervals
   spatial_sweep.py       Exploratory channel-budget and placement sweep
@@ -61,21 +63,37 @@ from the code alone but are deliberate; read it before changing the pipeline.
 
    ```
    python src/build_cache.py
+   python src/calibrate_vmax.py        # quantizer thresholds (optional check)
    python src/separability.py
+   python src/lda_contrasts.py
    python src/ablation.py
    python src/stats_check.py
    python src/spatial_sweep.py
    python src/shap_explainer.py
+   python src/channel_correlation.py
    ```
 
    The caches are written to `cache/`, which is excluded from git. Random
-   seeds are fixed at 42.
+   seeds are fixed at 42. `calibrate_vmax.py --train-only` recomputes the
+   quantizer thresholds from the training trials alone, as a sensitivity check.
 
-4. Embedded verification needs an Arduino Uno. Flash
-   `src/arduino/playback_verify/playback_verify.ino`, run
-   `src/export_playback.py`, then run `src/run_playback.py` to stream the
-   quantized ADC codes and compare the device output with the float32
-   reference.
+4. Embedded verification needs an Arduino Uno and `pip install pyserial`.
+   The order matters, because the firmware compiles its own copy of the
+   generated header:
+
+   1. `python src/validate_streaming.py`, which must print PASS.
+   2. `python src/export_playback.py`, which must end with `EXPORT COMPLETE`.
+      It writes `playback/playback_params.h` and one `codes_<trial>.bin` per
+      test trial.
+   3. Copy `playback/playback_params.h` over
+      `src/arduino/playback_verify/playback_params.h`.
+   4. Flash `src/arduino/playback_verify/playback_verify.ino`.
+   5. `python src/run_playback.py --port COM3 --all`, using your board's port.
+      It streams all 18 test trials and must report 666 windows and
+      `B->C VERIFIED`.
+
+5. To build the manuscript in `paper/`, copy the generated figures from
+   `figures/` into `paper/figures/`.
 
 ## Data
 

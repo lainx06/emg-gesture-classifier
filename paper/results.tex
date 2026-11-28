@@ -1,7 +1,9 @@
 % ============================================================
-% results.tex -- single source of truth for every number.
-% Change a value here, it updates everywhere in the paper.
-% Never type a number directly into the prose.
+% results.tex -- centralized source for reported analysis values.
+% Repeated and headline quantities are macro-driven to reduce transcription drift.
+% Signed values use \ensuremath{+}/\ensuremath{-} so they print as true plus/minus
+% signs in both text and math mode (e.g. Table 2 text cells, Table 1 math cells).
+% Historical diagnostics may be retained for provenance even when not cited in main.tex.
 % ============================================================
 
 % ---------- Dataset and pipeline parameters ----------
@@ -30,6 +32,14 @@
 \newcommand{\lsbCommodity}{0.651}    % microvolts
 \newcommand{\lsbEightCh}{1.252}      % microvolts
 
+% ---------- Quantizer clipping/saturation audit ----------
+% Full dataset audit: 2,709 trials. Saturation = |signal| > V_MAX at quantizer input.
+\newcommand{\quantAuditTrials}{2{,}709}
+\newcommand{\quantSatSessionOneApprox}{0.10\%}
+\newcommand{\quantSatCrossSessionMax}{0.0672\%}
+\newcommand{\depthCommodityStepRatio}{1.9246}
+\newcommand{\rateDepthCommodityStepRatio}{1.9210}
+
 % ---------- LDA 2x2 (headline table) ----------
 \newcommand{\ldaClinWithin}{96.2\%}
 \newcommand{\ldaCommWithin}{86.1\%}
@@ -38,7 +48,7 @@
 \newcommand{\ldaClinDrop}{13.7}
 \newcommand{\ldaCommDrop}{14.7}
 \newcommand{\ldaInteractionP}{0.59}
-\newcommand{\ldaInteractionCI}{[-5.3{,} +7.2]}
+\newcommand{\ldaInteractionCI}{[\ensuremath{-}5.3, \ensuremath{+}7.2]}
 
 % ---------- Random Forest ----------
 \newcommand{\rfClinDayOne}{97.2\%}
@@ -50,44 +60,52 @@
 \newcommand{\rfClinDrop}{5.4}
 \newcommand{\rfCommDrop}{14.0}
 \newcommand{\rfInteractionP}{0.0091}
-\newcommand{\rfInteractionCI}{[+2.8{,} +14.5]}
+\newcommand{\rfInteractionCI}{[\ensuremath{+}2.8, \ensuremath{+}14.5]}
 \newcommand{\rfInteractionNormP}{0.0049}
 \newcommand{\bonferroniAlpha}{0.01}
+\newcommand{\rfInteractionDiff}{\ensuremath{+}8.6}
+\newcommand{\spatialDayOnePenalty}{11.10}
+\newcommand{\spatialDropPenalty}{9.09}
 
 % ---------- Model-ceiling spread (post-hoc) ----------
 \newcommand{\clinModelSpread}{9.3}
 \newcommand{\commModelSpread}{2.3}
 \newcommand{\deployCost}{1.6}
+\newcommand{\ldaRfClinicalGap}{9.3}
+\newcommand{\ldaRfCommodityGap}{1.6}
+\newcommand{\rfTwoChLayoutDayOneRange}{9.3}
+\newcommand{\rfTwoChLayoutDropRange}{6.7}
+\newcommand{\rfTwoChAvgDropPenalty}{6.20}
 
 % ---------- Ablation: Day 1 difference from clinical ----------
-\newcommand{\rateDayOneDiff}{+0.16}
-\newcommand{\rateDayOneCI}{[-0.06{,} +0.58]}
-\newcommand{\depthDayOneDiff}{-0.09}
-\newcommand{\depthDayOneCI}{[-0.27{,} +0.00]}
-\newcommand{\rateDepthDayOneDiff}{+0.18}
-\newcommand{\rateDepthDayOneCI}{[-0.01{,} +0.72]}
-\newcommand{\spatialDayOneDiff}{-11.10}
-\newcommand{\spatialDayOneCI}{[-14.67{,} -8.31]}
-\newcommand{\commodityDayOneDiff}{-10.23}
-\newcommand{\commodityDayOneCI}{[-14.82{,} -7.25]}
+\newcommand{\rateDayOneDiff}{\ensuremath{+}0.16}
+\newcommand{\rateDayOneCI}{[\ensuremath{-}0.06, \ensuremath{+}0.58]}
+\newcommand{\depthDayOneDiff}{\ensuremath{-}0.09}
+\newcommand{\depthDayOneCI}{[\ensuremath{-}0.27, \ensuremath{+}0.00]}
+\newcommand{\rateDepthDayOneDiff}{\ensuremath{+}0.18}
+\newcommand{\rateDepthDayOneCI}{[\ensuremath{-}0.01, \ensuremath{+}0.72]}
+\newcommand{\spatialDayOneDiff}{\ensuremath{-}11.10}
+\newcommand{\spatialDayOneCI}{[\ensuremath{-}14.67, \ensuremath{-}8.31]}
+\newcommand{\commodityDayOneDiff}{\ensuremath{-}10.23}
+\newcommand{\commodityDayOneCI}{[\ensuremath{-}14.82, \ensuremath{-}7.25]}
 
 % ---------- Ablation: cross-session drop difference from clinical ----------
-\newcommand{\rateDropDiff}{-0.18}
-\newcommand{\rateDropCI}{[-1.78{,} +0.48]}
-\newcommand{\depthDropDiff}{-0.10}
-\newcommand{\depthDropCI}{[-0.29{,} +0.03]}
-\newcommand{\rateDepthDropDiff}{-0.27}
-\newcommand{\rateDepthDropCI}{[-1.88{,} +0.34]}
-\newcommand{\spatialDropDiff}{+9.09}
-\newcommand{\spatialDropCI}{[+3.32{,} +14.66]}
-\newcommand{\commodityDropDiff}{+8.57}
-\newcommand{\commodityDropCI}{[+2.78{,} +14.38]}
+\newcommand{\rateDropDiff}{\ensuremath{-}0.18}
+\newcommand{\rateDropCI}{[\ensuremath{-}1.78, \ensuremath{+}0.48]}
+\newcommand{\depthDropDiff}{\ensuremath{-}0.10}
+\newcommand{\depthDropCI}{[\ensuremath{-}0.29, \ensuremath{+}0.03]}
+\newcommand{\rateDepthDropDiff}{\ensuremath{-}0.27}
+\newcommand{\rateDepthDropCI}{[\ensuremath{-}1.88, \ensuremath{+}0.34]}
+\newcommand{\spatialDropDiff}{\ensuremath{+}9.09}
+\newcommand{\spatialDropCI}{[\ensuremath{+}3.32, \ensuremath{+}14.66]}
+\newcommand{\commodityDropDiff}{\ensuremath{+}8.57}
+\newcommand{\commodityDropCI}{[\ensuremath{+}2.78, \ensuremath{+}14.38]}
 
 % ---------- Commodity vs spatial-only (direct paired difference) ----------
-\newcommand{\commVsSpatialDayOne}{+0.87}
-\newcommand{\commVsSpatialDayOneCI}{[-0.67{,} +2.42]}
-\newcommand{\commVsSpatialDrop}{-0.52}
-\newcommand{\commVsSpatialDropCI}{[-3.06{,} +1.26]}
+\newcommand{\commVsSpatialDayOne}{\ensuremath{+}0.87}
+\newcommand{\commVsSpatialDayOneCI}{[\ensuremath{-}0.67, \ensuremath{+}2.42]}
+\newcommand{\commVsSpatialDrop}{\ensuremath{-}0.52}
+\newcommand{\commVsSpatialDropCI}{[\ensuremath{-}3.06, \ensuremath{+}1.26]}
 
 % ---------- SHAP ----------
 \newcommand{\shapMigrationDayOne}{15.0\%}
@@ -98,6 +116,8 @@
 \newcommand{\shapExcessCommodity}{0.0131}
 \newcommand{\shapSimilarityClinical}{98.7\%}   % clinical, day 1 vs day 29
 \newcommand{\shapSimilarityCommodity}{97.8\%}  % commodity, day 1 vs day 29
+\newcommand{\shapCosineClinical}{0.987}
+\newcommand{\shapCosineCommodity}{0.978}
 
 % ---------- Deployability (bytes) ----------
 \newcommand{\flashLDA}{172}
@@ -109,7 +129,7 @@
 \newcommand{\flashXGBmax}{20{,}957}
 \newcommand{\sramNaive}{1600}
 \newcommand{\sramIntSixteen}{800}
-\newcommand{\rfSizeCorr}{-0.456}
+\newcommand{\rfSizeCorr}{\ensuremath{-}0.456}
 \newcommand{\rfSizeCorrP}{0.002}
 
 % ---------- Confusion matrices and failure modes ----------
@@ -119,11 +139,14 @@
 \newcommand{\cmCommRestError}{26.1}          % percentage points
 \newcommand{\cmCommCloseToExt}{30.1\%}
 \newcommand{\cmCommExtToClose}{25.0\%}
-\newcommand{\cmClinRestDrop}{-1.0}
-\newcommand{\cmCommRestDrop}{-13.5}
+\newcommand{\cmClinRestDrop}{\ensuremath{-}1.0}
+\newcommand{\cmCommRestDrop}{\ensuremath{-}13.5}
 \newcommand{\cmRestMisclass}{17.2\%}
-\newcommand{\fOneFNineVmax}{0.1622}          % mV (from calibration)
-\newcommand{\fSixFFourteenVmax}{0.9616}      % mV (from calibration)
+% Historical per-derivation calibration diagnostics; not used in the manuscript.
+% F6--F14 is the largest-amplitude derivation in that diagnostic and is NOT
+% the second commodity channel (which is F5--F13). Retained for provenance only.
+\newcommand{\fOneFNineVmax}{0.1622}          % mV, F1--F9
+\newcommand{\fSixFFourteenVmax}{0.9616}      % mV, F6--F14
 
 % ---------- Embedded deployability constraints ----------
 \newcommand{\measuredFlash}{8{,}344}
@@ -136,6 +159,8 @@
 %\newcommand{\accumSRAM}{88}
 \newcommand{\wcetTick}{1{,}612}
 \newcommand{\latencyTotal}{202}
+\newcommand{\appFlashLimit}{32{,}256}
+\newcommand{\psSixteenHeadroom}{192}
 
 % ---------- Embedded implementation verification ----------
 \newcommand{\nVerifyWindows}{666}

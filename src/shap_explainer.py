@@ -78,7 +78,8 @@ def eval_subject_shap(X_s, Y_s, G_s, feat_names):
     if len(target_indices) != 8:
         raise ValueError(f"Expected exactly 8 shared features, found {len(target_indices)}")
 
-    # All four profiles come from a single trial: 37 windows each, matched.
+    # Each profile pools one repetition (trial 6 or 7) of all three gestures:
+    # 3 x 37 = 111 windows, the same count for all four profiles.
     m_t6_d1  = get_shap_means(explainer, scaler.transform(X_s[t6_d1]))
     m_t7_d1  = get_shap_means(explainer, scaler.transform(X_s[t7_d1]))
     m_t6_d29 = get_shap_means(explainer, scaler.transform(X_s[t6_d29]))

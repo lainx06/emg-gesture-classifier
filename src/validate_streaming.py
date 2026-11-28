@@ -15,6 +15,8 @@ counted when B was reused in the B+C window.
 Requires exact agreement (float64, same arithmetic) before porting to C++.
 """
 
+import sys
+
 import numpy as np
 from scipy import signal
 
@@ -196,13 +198,14 @@ def main():
     print(f"{'trial':<20} {'windows':>8} {'max abs err':>14} {'zc mismatch':>13}")
     print("-" * 58)
 
-    worst, zc_bad, count_bad = 0.0, 0, 0
+    worst, zc_bad, count_bad, skipped = 0.0, 0, 0, 0
 
     for s, p, g, tr in trials:
         try:
             sig = prepare(s, p, g, tr)
-        except Exception as e:
-            print(f"s{s}p{p}g{g}t{tr:<11} skipped: {type(e).__name__}")
+        except (FileNotFoundError, OSError, ValueError, AssertionError) as e:
+            skipped += 1
+            print(f"s{s}p{p}g{g}t{tr:<11} SKIPPED: {type(e).__name__}")
             continue
 
         d = direct_features(sig, FS_COMMODITY)
@@ -227,12 +230,19 @@ def main():
     print(f"ZC mismatches          : {zc_bad}")
     print(f"window count mismatches: {count_bad}")
     print(f"synthetic failures     : {sf}")
+    print(f"real trials checked    : {len(trials) - skipped} of {len(trials)}")
     print()
 
-    if worst < 1e-12 and zc_bad == 0 and count_bad == 0 and sf == 0:
+    # Every real trial must be checked: a skipped trial is a failure, so a
+    # missing dataset cannot produce a PASS from the synthetic cases alone.
+    ok = (skipped == 0 and worst < 1e-12 and zc_bad == 0
+          and count_bad == 0 and sf == 0)
+    if ok:
         print("PASS - streaming combiner is exactly equivalent. Port to C++.")
     else:
-        print("FAIL - combiner diverges. Do not port until this is resolved.")
+        print("FAIL - combiner diverges or real trials were not checked. "
+              "Do not port until this is resolved.")
+    sys.exit(0 if ok else 1)
 
 
 if __name__ == "__main__":

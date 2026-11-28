@@ -36,6 +36,7 @@ may still agree when it fails.
 """
 
 import os
+import sys
 import numpy as np
 from scipy import signal
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
@@ -53,6 +54,8 @@ SUBJECT = 1
 GESTURES = [11, 16, 17]
 GEST_MAP = {11: 0, 16: 1, 17: 2}
 TRAIN_TRIALS = [1, 2, 3, 4, 5]
+
+EXPECTED_WINDOWS = 37        # per trial, as in the pipeline
 
 TEST_TRIALS = [
     (s, g, t)
@@ -355,6 +358,7 @@ def main():
 
     vectors, margins, score_errs, std_errs = {}, [], [], []
     zc_total = 0
+    problems = []          # any entry here makes the export fail
 
     print()
     print(f"{'trial':<14} {'win':>4} {'feat rel':>10} {'std feat SD':>12} "
@@ -365,12 +369,16 @@ def main():
     for sess, gest, tr in TEST_TRIALS:
         try:
             codes = adc_codes(sess, gest, tr)
-        except Exception as e:
-            print(f"s{sess}g{gest}t{tr:<7} skipped: {type(e).__name__}")
+        except (FileNotFoundError, OSError, ValueError, AssertionError) as e:
+            print(f"s{sess}g{gest}t{tr:<7} SKIPPED: {type(e).__name__}")
+            problems.append(f"s{sess}g{gest}t{tr}: could not be read ({type(e).__name__})")
             continue
 
         A_feat = features_float64(codes, sos)
         B = ref.run(codes)
+        if len(A_feat) != len(B["features"]) or len(A_feat) != EXPECTED_WINDOWS:
+            problems.append(f"s{sess}g{gest}t{tr}: window counts A={len(A_feat)} "
+                            f"B={len(B['features'])}, expected {EXPECTED_WINDOWS}")
         n = min(len(A_feat), len(B["features"]))
 
         # ZC is a discrete count; it must match exactly and is reported
@@ -424,7 +432,15 @@ def main():
               f"{agree}/{n:<4} {margin:>11.4f}")
 
     print("-" * 88)
+    n_trials = len(margins)
+    n_windows = sum(len(vectors[f"s{s}g{g}t{t}_B_features"])
+                    for s, g, t in TEST_TRIALS if f"s{s}g{g}t{t}_B_features" in vectors)
+    print(f"trials exported:                    {n_trials} of {len(TEST_TRIALS)}")
+    print(f"windows exported:                   {n_windows} of "
+          f"{len(TEST_TRIALS) * EXPECTED_WINDOWS}")
     print(f"A-B ZC mismatches (must be 0):      {zc_total}")
+    if zc_total:
+        problems.append(f"{zc_total} A-B zero-crossing mismatches")
     if std_errs:
         print(f"max A-B standardized-feature error: {max(std_errs):.3e} SD")
 
@@ -448,6 +464,13 @@ def main():
     print(f"wrote one codes_<trial>.bin per trial "
           f"(interleaved little-endian int16, ch0 ch1 per sample)")
     print("stream each file separately; reset AVR filter state between trials")
+
+    if problems:
+        print("\nEXPORT INCOMPLETE -- do not use these vectors for verification:")
+        for msg in problems:
+            print(f"  {msg}")
+        sys.exit(1)
+    print("\nEXPORT COMPLETE")
 
 
 if __name__ == "__main__":

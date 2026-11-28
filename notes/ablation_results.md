@@ -1,3 +1,6 @@
+> **Historical working notes.** Final values, with BCa confidence intervals, are
+> produced by `src/stats_check.py` and reported in Table 2 of the paper.
+
 # Hardware Ablation & Mechanism Notes
 
 ## 1. Primary Finding (Descriptive)

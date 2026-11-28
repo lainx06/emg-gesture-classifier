@@ -61,6 +61,11 @@ def crc16_ccitt(data, crc=0xFFFF):
             crc = ((crc << 1) ^ 0x1021) & 0xFFFF if crc & 0x8000 else (crc << 1) & 0xFFFF
     return crc
 
+# what a complete run must contain (matches export_playback.TEST_TRIALS)
+EXPECTED_WINDOWS = 37
+EXPECTED_TRIALS = [f"s{s}g{g}t{t}" for s in (1, 2, 3)
+                   for g in (11, 16, 17) for t in (6, 7)]
+
 # tolerances, fixed in advance
 TOL_FILT_LSB = 0.5
 TOL_STD_SD = 1e-3
@@ -175,9 +180,21 @@ def run_trial(ser, codes, mode, chunk=8, verbose=False):
 
 # ------------------------------------------------------------------ compare
 
-def compare(key, C, ref, lsb, expect_crc=None):
-    """Compare level C against level B. Returns (all_pass, lines)."""
+def compare(key, C, ref, lsb, expect_crc=None, expect_filter=False):
+    """Compare level C against level B. Returns (all_pass, lines).
+
+    Every expected record must be present: a trial with no windows (or, in
+    filter mode, no filtered samples) fails rather than passing on the CRC
+    alone.
+    """
     lines, ok = [], True
+
+    if "features" not in C or len(C["features"]) == 0:
+        lines.append("  windows            none returned by the device   FAIL")
+        ok = False
+    if expect_filter and "filtered" not in C:
+        lines.append("  filter output      none returned by the device   FAIL")
+        ok = False
 
     if expect_crc is not None:
         got = C.get("crc")
@@ -205,8 +222,9 @@ def compare(key, C, ref, lsb, expect_crc=None):
         Bsc = ref[f"{key}_B_scores"]
         Bp = ref[f"{key}_B_predictions"]
 
-        if len(Bf) != len(C["features"]):
-            lines.append(f"  window count       B={len(Bf)} C={len(C['features'])}  FAIL")
+        if len(Bf) != len(C["features"]) or len(Bf) != EXPECTED_WINDOWS:
+            lines.append(f"  window count       B={len(Bf)} C={len(C['features'])} "
+                         f"(expected {EXPECTED_WINDOWS})  FAIL")
             return False, lines
         lines.append(f"  window count       {len(Bf)}   PASS")
 
@@ -327,7 +345,20 @@ def main():
         print("could not read ADC_LSB from playback_params.h")
         sys.exit(1)
 
-    keys = list(files) if args.all else [args.trial]
+    if args.all:
+        missing = [k for k in EXPECTED_TRIALS if k not in files]
+        extra = [k for k in files if k not in EXPECTED_TRIALS]
+        if missing or extra:
+            print(f"--all needs exactly the {len(EXPECTED_TRIALS)} exported test trials.")
+            if missing:
+                print(f"  missing: {', '.join(missing)}")
+            if extra:
+                print(f"  unexpected: {', '.join(extra)}")
+            print("Re-run export_playback.py and check it reports EXPORT COMPLETE.")
+            sys.exit(1)
+        keys = list(EXPECTED_TRIALS)
+    else:
+        keys = [args.trial]
     mode = MODE_FILTER if args.mode == "filter" else MODE_SUMMARY
 
     ser = serial.Serial(args.port, args.baud, timeout=10)
@@ -335,6 +366,7 @@ def main():
     time.sleep(2.0)          # Arduino resets when the port opens
 
     all_ok = True
+    n_trials_ok, n_windows = 0, 0
     for key in keys:
         if key not in files:
             print(f"unknown trial {key}")
@@ -348,13 +380,20 @@ def main():
 
         print(f"\n{key}  ({n} samples, mode={args.mode})")
         C = run_trial(ser, codes, mode, chunk=args.chunk, verbose=args.verbose)
-        ok, lines = compare(key, C, ref, lsb, expect_crc=expect_crc)
+        ok, lines = compare(key, C, ref, lsb, expect_crc=expect_crc,
+                            expect_filter=(mode == MODE_FILTER))
         for ln in lines:
             print(ln)
         all_ok &= ok
+        n_trials_ok += int(ok)
+        n_windows += len(C.get("features", []))
 
     ser.close()
     print()
+    print(f"trials verified: {n_trials_ok} of {len(keys)}; "
+          f"windows returned: {n_windows} (expected {len(keys) * EXPECTED_WINDOWS})")
+    if n_windows != len(keys) * EXPECTED_WINDOWS:
+        all_ok = False
     print("B->C VERIFIED" if all_ok else "B->C FAILED")
     sys.exit(0 if all_ok else 1)
 

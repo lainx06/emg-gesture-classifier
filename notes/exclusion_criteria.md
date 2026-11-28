@@ -1,3 +1,8 @@
+> **Not adopted.** This pre-registration-style rule was never implemented: no
+> subject was excluded before feature extraction, and the primary analyses use
+> all 43 subjects. The only exclusion in the paper is the Day-1 accuracy <= 40%
+> mask for the descriptive headroom-normalized endpoint (`src/separability.py`).
+
 # Data Exclusion Criteria
 
 ## High Baseline Noise / Non-Compliance
