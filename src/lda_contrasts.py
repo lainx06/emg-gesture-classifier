@@ -40,10 +40,15 @@ def check_complete(path):
     cells, counts = np.unique(keys, axis=0, return_counts=True)
     n_cells = N_SUBJECTS * N_SESSIONS * N_GESTURES * N_TRIALS
     bad = cells[counts != N_WINDOWS]
-    if len(cells) != n_cells or len(bad) or len(Y) != n_cells * N_WINDOWS:
+    # Window IDs must be distinct and run 0..36 in every recording, so a
+    # duplicated window cannot stand in for a missing one.
+    ids = np.unique(np.column_stack([keys, G[:, 3]]), axis=0)
+    ids_ok = (len(ids) == len(Y)) and G[:, 3].min() == 0 and G[:, 3].max() == N_WINDOWS - 1
+    if len(cells) != n_cells or len(bad) or len(Y) != n_cells * N_WINDOWS or not ids_ok:
         print(f"FAIL: {os.path.basename(path)} is incomplete: {len(cells)} of "
               f"{n_cells} recordings, {len(Y)} of {n_cells * N_WINDOWS} windows, "
-              f"{len(bad)} recording(s) without {N_WINDOWS} windows")
+              f"{len(bad)} recording(s) without {N_WINDOWS} windows, "
+              f"window IDs {'valid' if ids_ok else 'duplicated or out of range'}")
         sys.exit(1)
 
 

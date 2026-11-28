@@ -1,5 +1,7 @@
-# Reproduction run on the full GRABMyo data, 2026-11-28 (Windows, Python 3.14 venv,
-# requirements_analysis_frozen.txt), branch fix/review-findings at 7cdf6d9.
+# Reproduction run on the full GRABMyo data, 2026-11-28 (Windows, Python 3.12.10 venv
+# with requirements_analysis_frozen.txt), branch fix/review-findings at 7cdf6d9.
+# The original analysis used Python 3.14.2 (notes/ANALYSIS_ENVIRONMENT_PROVENANCE.md);
+# this run reproduces its numbers under 3.12.10.
 # Console output, verbatim.
 
 (.venv) PS C:\Users\Lain\emg-gesture-classifier> python src\build_cache.py
