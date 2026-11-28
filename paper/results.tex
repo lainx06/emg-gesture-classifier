@@ -21,8 +21,8 @@
 \newcommand{\hpCutoff}{20}           % Hz
 
 % ---------- Channel derivation evidence ----------
-\newcommand{\rawCorr}{0.987}
-\newcommand{\bipolarCorr}{0.139}
+\newcommand{\rawCorr}{0.984}           % F1 vs F9, edge-trimmed (full trial: 0.987)
+\newcommand{\bipolarCorr}{0.139}       % F1F9 vs F5F13, edge-trimmed (src/channel_correlation.py)
 \newcommand{\interRingCm}{2}
 
 % ---------- Quantization ranges (mV) ----------
@@ -37,6 +37,17 @@
 \newcommand{\quantAuditTrials}{2{,}709}
 \newcommand{\quantSatSessionOneApprox}{0.10\%}
 \newcommand{\quantSatCrossSessionMax}{0.0672\%}
+% Per-trial maxima, src/quant_saturation_audit.py (6.6813% and 3.1500%).
+\newcommand{\quantSatTrialMaxSessionOne}{6.7\%}
+\newcommand{\quantSatTrialMaxCross}{3.2\%}
+% Training-only quantizer calibration, src/vmax_sensitivity.py.
+% Threshold shifts -2.46%, +1.12%, +1.16%; mean Day-1 change max 0.19 pts
+% (commodity RF); mean drop change max 0.86 pts (rate_depth LDA);
+% largest per-subject drop change 37.84 pts (rate_depth LDA).
+\newcommand{\vmaxSensThresholdShift}{2.5\%}
+\newcommand{\vmaxSensDayOneMax}{0.2}
+\newcommand{\vmaxSensDropMax}{0.9}
+\newcommand{\vmaxSensSubjectMax}{38}
 \newcommand{\depthCommodityStepRatio}{1.9246}
 \newcommand{\rateDepthCommodityStepRatio}{1.9210}
 
