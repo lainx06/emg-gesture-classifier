@@ -17,6 +17,7 @@ offline analysis.
 
 ```
 src/                     Analysis pipeline (Python)
+  download_grabmyo.py    Fetches the GRABMyo recordings this study uses
   preprocess.py          WFDB loading, bipolar derivation, edge trimming
   pipeline.py            Degradation chain and feature extraction
   calibrate_vmax.py      Quantizer full-scale (V_max) calibration
@@ -54,10 +55,17 @@ from the code alone but are deliberate; read it before changing the pipeline.
 
    The exact versions used for the paper are in `software_versions.txt`.
 
-2. Download GRABMyo version 1.1.0 from PhysioNet
-   (https://doi.org/10.13026/89dm-f662) into `data/grabmyo/`, keeping the
-   distributed `Session1/`, `Session2/` and `Session3/` folders. About 1.7 GB.
-   `data/` is excluded from git.
+2. Download the data. This study uses only gestures 11, 16 and 17, so you
+   don't need the full 9.1 GB dataset:
+
+   ```
+   python src/download_grabmyo.py
+   ```
+
+   This fetches those recordings from GRABMyo version 1.1.0 on PhysioNet
+   (https://doi.org/10.13026/89dm-f662) into `data/grabmyo/`, checks every
+   file against PhysioNet's checksums, and can be re-run to resume. `data/` is
+   excluded from git.
 
 3. Build the feature caches, then run the analyses:
 
