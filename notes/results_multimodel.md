@@ -1,3 +1,9 @@
+> **Superseded.** Output from an earlier run that applied the normalized-endpoint
+> exclusion separately for each model. The paper uses a union mask across all
+> models (2 subjects excluded, n = 41), so the normalized p-values here differ
+> from Table 1. Rerun `src/separability.py` for current values. The primary
+> (absolute) results are unchanged.
+
 ========================================
  MODEL: LDA
 ========================================

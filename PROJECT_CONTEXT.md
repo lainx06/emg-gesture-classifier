@@ -197,16 +197,18 @@ These have caused silent bugs before. Preserve them.
 
 **Headline results (LDA):** clinical within-session 96.2%, commodity
 within-session 86.1%, clinical cross-session 82.5%, commodity cross-session
-71.4%. Both main effects p < 0.001. Interaction is model-dependent —
-significant under Random Forest (p = 0.009), null under LDA and KNN.
+71.4%. Both main effects p < 0.001. Only Random Forest shows a
+significant interaction (p = 0.009); LDA and KNN are null.
 
 **Key observation:** commodity Day-29 accuracy is flat across all five models
 (70.7–73.0%) while clinical spans 82.5–91.8%. Model choice buys 9.3 points of
 cross-session robustness on 8 channels, 2.3 points on 2.
 
-**Outstanding:** V_MAX pooled-vs-per-channel decision, cache rebuild for the
-six-condition ablation, SHAP (Phase 2, mentor requirement), embedded latency
-and deployability measurements, Methods + Results draft (due 3 August 2026).
+**Status (November 2026):** all analyses, SHAP, embedded profiling and
+playback verification are complete. V_MAX is pooled (see
+`src/calibrate_vmax.py`). The manuscript in `paper/` was cleared for public
+release (AFRL/PA Case No. AFRL-2026-4323) and is being submitted to *Biomedical Signal
+Processing and Control*.
 
 ---
 

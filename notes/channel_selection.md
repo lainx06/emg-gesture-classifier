@@ -5,7 +5,7 @@
 * **Extensor Group:** Channels F5 and F13 (Array indices 4 and 12)
 
 ## Monopolar vs. Bipolar Evidence
-* An initial test on `session1_participant1_gesture16_trial1` yielded a Pearson correlation of **0.987** between F1 and F9.
+* An initial test on `session1_participant1_gesture16_trial1` yielded a Pearson correlation of **0.987** between F1 and F9. (That value is over the full trial. Over the 0.5 s edge-trimmed signal the pipeline uses, F1 vs F9 is 0.984 and F1F9 vs F5F13 is 0.139; the paper reports this trimmed pair. See `src/channel_correlation.py`.)
 * These electrodes are located 2 cm apart along the same muscle axis. A near-perfect correlation proves the raw GRABMyo dataset channels are **monopolar** (recorded against a shared, distant reference).
 
 ## Hardware Simulation (MyoWare 2.0)

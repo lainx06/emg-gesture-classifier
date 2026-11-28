@@ -1,3 +1,12 @@
+"""Historical exploration: zero-crossing deadzone (epsilon) comparison.
+
+Compares ZC rates at 3.2 uV and 20 uV on the two commodity derivations (F1F9,
+F5F13) for subject 1, Session 1, trials 1-7. This is how the 20 uV deadzone in
+pipeline.py was chosen. Note that it looks at the unfiltered, edge-trimmed
+signal, not the high-pass filtered signal the pipeline computes ZC on, and that
+trials 6-7 are the held-out Day-1 test trials (disclosed in the paper's
+Limitations).
+"""
 import numpy as np
 from preprocess import load_trial
 
@@ -16,8 +25,9 @@ def test_zc_comparison():
             zc_rates_ch1 = []
             for t in range(1, 8):
                 try:
-                    sig = load_trial(1, 1, g, t)
-                    if sig is None or len(sig) == 0: continue
+                    sig = load_trial(1, 1, g, t)["commodity"]
+                    if len(sig) == 0:
+                        continue
                     
                     s0 = sig[:, 0]
                     sc0 = np.diff(np.sign(s0)) != 0

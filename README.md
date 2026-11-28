@@ -17,11 +17,16 @@ offline analysis.
 
 ```
 src/                     Analysis pipeline (Python)
+  download_grabmyo.py    Fetches the GRABMyo recordings this study uses
   preprocess.py          WFDB loading, bipolar derivation, edge trimming
   pipeline.py            Degradation chain and feature extraction
   calibrate_vmax.py      Quantizer full-scale (V_max) calibration
   build_cache.py         Feature caches for all six conditions
   separability.py        Five-model evaluation and statistics
+  lda_contrasts.py       Four LDA hardware/session contrasts
+  quant_saturation_audit.py  Quantizer saturation rates per session
+  vmax_sensitivity.py    Effect of a training-only quantizer calibration
+  channel_correlation.py Correlations supporting the bipolar derivation
   ablation.py            Random Forest degradation-axis comparison
   stats_check.py         Bootstrap confidence intervals
   spatial_sweep.py       Exploratory channel-budget and placement sweep
@@ -52,30 +57,60 @@ from the code alone but are deliberate; read it before changing the pipeline.
 
    The exact versions used for the paper are in `software_versions.txt`.
 
-2. Download GRABMyo version 1.1.0 from PhysioNet
-   (https://doi.org/10.13026/89dm-f662) into `data/grabmyo/`, keeping the
-   distributed `Session1/`, `Session2/` and `Session3/` folders. About 1.7 GB.
-   `data/` is excluded from git.
+2. Download the data. This study uses only gestures 11, 16 and 17, so you
+   don't need the full 9.1 GB dataset:
+
+   ```
+   python src/download_grabmyo.py
+   ```
+
+   This fetches those recordings from GRABMyo version 1.1.0 on PhysioNet
+   (https://doi.org/10.13026/89dm-f662) into `data/grabmyo/`, checks every
+   file against PhysioNet's checksums, and can be re-run to resume. `data/` is
+   excluded from git.
 
 3. Build the feature caches, then run the analyses:
 
    ```
    python src/build_cache.py
+   python src/calibrate_vmax.py        # quantizer thresholds (optional check)
    python src/separability.py
+   python src/lda_contrasts.py
    python src/ablation.py
    python src/stats_check.py
    python src/spatial_sweep.py
    python src/shap_explainer.py
+   python src/channel_correlation.py
+   python src/quant_saturation_audit.py
+   python src/vmax_sensitivity.py      # optional: training-only calibration
    ```
 
    The caches are written to `cache/`, which is excluded from git. Random
-   seeds are fixed at 42.
+   seeds are fixed at 42. `vmax_sensitivity.py` recalibrates the quantizer on
+   the training trials alone, rebuilds the quantized features and reports the
+   change in accuracy and drop.
 
-4. Embedded verification needs an Arduino Uno. Flash
-   `src/arduino/playback_verify/playback_verify.ino`, run
-   `src/export_playback.py`, then run `src/run_playback.py` to stream the
-   quantized ADC codes and compare the device output with the float32
-   reference.
+4. Embedded verification needs an Arduino Uno and `pip install pyserial`.
+   The order matters, because the firmware compiles its own copy of the
+   generated header:
+
+   1. `python src/validate_streaming.py`, which must print PASS.
+   2. `python src/export_playback.py`, which must end with `EXPORT COMPLETE`.
+      It writes `playback/playback_params.h` and one `codes_<trial>.bin` per
+      test trial.
+   3. Copy `playback/playback_params.h` over
+      `src/arduino/playback_verify/playback_params.h`.
+   4. Flash `src/arduino/playback_verify/playback_verify.ino`.
+   5. `python src/run_playback.py --port COM3 --all`, using your board's port.
+      It streams all 18 test trials and must report 666 windows and
+      `B->C VERIFIED`.
+   6. `python src/run_playback.py --port COM3 --trial s1g11t6 --mode filter`.
+      Summary mode does not return filtered samples, so this one-trial run is
+      what checks the filter-output criterion (within 0.5 ADC LSB). It must
+      also report `B->C VERIFIED`.
+
+5. To build the manuscript in `paper/`, copy the generated figures from
+   `figures/` into `paper/figures/`.
 
 ## Data
 

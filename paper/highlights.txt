@@ -1,0 +1,7 @@
+Highlights
+
+- Paired ablation separates channel count, sample rate and bit depth over 28 days
+- With Random Forest, one 2-channel layout cost 11 Day-1 points and 9 points of drift
+- 1000 Hz sampling and 10-bit quantization changed 28-day loss by under 2 points
+- Two-channel cross-session robustness depended strongly on electrode placement
+- LDA runs on an ATmega328P and reproduced all 666 offline predictions exactly
