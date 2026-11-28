@@ -13,6 +13,25 @@ unchanged on Days 8 and 29. An ATmega328P (Arduino Uno) implementation is
 profiled for memory and timing and checked for numerical equivalence with the
 offline analysis.
 
+![Processing and evaluation pipeline: load, derive bipolar channels, degrade, filter, featurize, then evaluate offline and deploy on an ATmega328P](docs/pipeline.png)
+
+## Main result
+
+![Paired differences from the 8-channel baseline for each degraded condition, Random Forest, with 95% BCa confidence intervals](docs/ablation.png)
+
+With Random Forest, reducing the sampling rate to 1000 Hz or quantizing to
+10 bits changed Day-1 accuracy by less than 0.75 points and 28-day degradation
+by less than 2 points. The fixed two-channel layout used throughout the paper
+(derivations 0 and 4) cost 11.1 points of Day-1 accuracy and added 9.1 points
+of degradation. A post-hoc sweep shows that the size of this two-channel
+penalty depends strongly on which two channels are kept. Points are paired
+per-subject differences from the 8-channel baseline (n = 43) with 95% BCa
+confidence intervals.
+
+The code release cited by the paper is tagged
+[`v1.0`](https://github.com/lainx06/emg-gesture-classifier/tree/v1.0).
+A full-data reproduction run is in `results/reproduction/`.
+
 ## Repository layout
 
 ```
@@ -41,7 +60,8 @@ src/                     Analysis pipeline (Python)
     playback_verify/         Verified streaming firmware (replayed ADC codes)
 notes/                   Analysis plan, design decisions, logged results
 results/spatial_sweep/   Sweep outputs (CSV) and audit log
-paper/                   Manuscript source (LaTeX)
+paper/                   Manuscript source (LaTeX) and submitted figures
+docs/                    Images used in this README
 ```
 
 `PROJECT_CONTEXT.md` explains the design decisions. Several choices look odd
@@ -109,8 +129,8 @@ from the code alone but are deliberate; read it before changing the pipeline.
       what checks the filter-output criterion (within 0.5 ADC LSB). It must
       also report `B->C VERIFIED`.
 
-5. To build the manuscript in `paper/`, copy the generated figures from
-   `figures/` into `paper/figures/`.
+5. The manuscript source is in `paper/`, with the submitted figures in
+   `paper/figures/`. Regenerated figures are written to `figures/`.
 
 ## Data
 
@@ -128,8 +148,9 @@ No data are redistributed in this repository.
 
 ## Citation
 
-If you use this code, please cite the paper (citation to be updated on
-publication).
+If you use this code, please cite it with the "Cite this repository" button
+on GitHub (from `CITATION.cff`). A citation for the paper will be added on
+publication.
 
 ## Disclaimer
 

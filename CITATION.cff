@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite it as below."
+title: "EMG Gesture Classifier: Hardware Constraints and Cross-Session Degradation"
+abstract: >-
+  Analysis code, ATmega328P firmware and verification scripts for a paired
+  ablation of channel count, sample rate and quantization in surface EMG
+  gesture classification across 28 days, using the open GRABMyo dataset.
+type: software
+authors:
+  - family-names: Hossain
+    given-names: Adnan
+    affiliation: "The City College of New York"
+  - family-names: Lin
+    given-names: Jing
+    affiliation: "Air Force Research Laboratory"
+version: "1.0"
+commit: 041c726e954ae4156f45d7360ad60b7f8593f85c
+date-released: "2026-11-28"
+license: MIT
+repository-code: "https://github.com/lainx06/emg-gesture-classifier"
+keywords:
+  - surface electromyography
+  - gesture recognition
+  - cross-session
+  - embedded systems
+  - hardware constraints
+  - feature attribution
