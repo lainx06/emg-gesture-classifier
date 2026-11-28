@@ -406,6 +406,9 @@ def main():
         score_err = float(np.abs(A_score - B["scores"][:n]).max())
         score_errs.append(score_err)
         agree = int(np.sum(A_pred == B["predictions"][:n]))
+        if agree != n:
+            problems.append(f"s{sess}g{gest}t{tr}: A and B predictions agree on "
+                            f"{agree} of {n} windows")
 
         s = np.sort(B["scores"][:n], axis=1)
         margin = float((s[:, -1] - s[:, -2]).min())

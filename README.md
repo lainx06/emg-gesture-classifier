@@ -23,7 +23,9 @@ src/                     Analysis pipeline (Python)
   calibrate_vmax.py      Quantizer full-scale (V_max) calibration
   build_cache.py         Feature caches for all six conditions
   separability.py        Five-model evaluation and statistics
-  lda_contrasts.py       Four planned LDA hardware/session contrasts
+  lda_contrasts.py       Four LDA hardware/session contrasts
+  quant_saturation_audit.py  Quantizer saturation rates per session
+  vmax_sensitivity.py    Effect of a training-only quantizer calibration
   channel_correlation.py Correlations supporting the bipolar derivation
   ablation.py            Random Forest degradation-axis comparison
   stats_check.py         Bootstrap confidence intervals
@@ -79,11 +81,14 @@ from the code alone but are deliberate; read it before changing the pipeline.
    python src/spatial_sweep.py
    python src/shap_explainer.py
    python src/channel_correlation.py
+   python src/quant_saturation_audit.py
+   python src/vmax_sensitivity.py      # optional: training-only calibration
    ```
 
    The caches are written to `cache/`, which is excluded from git. Random
-   seeds are fixed at 42. `calibrate_vmax.py --train-only` recomputes the
-   quantizer thresholds from the training trials alone, as a sensitivity check.
+   seeds are fixed at 42. `vmax_sensitivity.py` recalibrates the quantizer on
+   the training trials alone, rebuilds the quantized features and reports the
+   change in accuracy and drop.
 
 4. Embedded verification needs an Arduino Uno and `pip install pyserial`.
    The order matters, because the firmware compiles its own copy of the
@@ -99,6 +104,10 @@ from the code alone but are deliberate; read it before changing the pipeline.
    5. `python src/run_playback.py --port COM3 --all`, using your board's port.
       It streams all 18 test trials and must report 666 windows and
       `B->C VERIFIED`.
+   6. `python src/run_playback.py --port COM3 --trial s1g11t6 --mode filter`.
+      Summary mode does not return filtered samples, so this one-trial run is
+      what checks the filter-output criterion (within 0.5 ADC LSB). It must
+      also report `B->C VERIFIED`.
 
 5. To build the manuscript in `paper/`, copy the generated figures from
    `figures/` into `paper/figures/`.

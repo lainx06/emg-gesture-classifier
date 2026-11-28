@@ -1,4 +1,4 @@
-"""Four planned LDA hardware-by-session contrasts (paper Section 4.1).
+"""Four LDA hardware-by-session contrasts (paper Section 4.1).
 
 Paired two-sided Wilcoxon signed-rank tests on per-subject LDA accuracies:
 
@@ -24,7 +24,27 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from separability import run_evaluation
 
 N_SUBJECTS = 43
+N_SESSIONS, N_GESTURES, N_TRIALS, N_WINDOWS = 3, 3, 7, 37
 ALPHA = 0.05 / 4
+
+
+def check_complete(path):
+    """Every subject x session x gesture x trial must have exactly 37 windows.
+
+    The evaluator returns an accuracy even if a recording is missing (for
+    example 185 of 222 test windows), so completeness is checked up front.
+    """
+    with np.load(path) as d:
+        Y, G = d["Y"], d["GROUPS"]
+    keys = np.column_stack([G[:, 0], G[:, 1], Y, G[:, 2]])
+    cells, counts = np.unique(keys, axis=0, return_counts=True)
+    n_cells = N_SUBJECTS * N_SESSIONS * N_GESTURES * N_TRIALS
+    bad = cells[counts != N_WINDOWS]
+    if len(cells) != n_cells or len(bad) or len(Y) != n_cells * N_WINDOWS:
+        print(f"FAIL: {os.path.basename(path)} is incomplete: {len(cells)} of "
+              f"{n_cells} recordings, {len(Y)} of {n_cells * N_WINDOWS} windows, "
+              f"{len(bad)} recording(s) without {N_WINDOWS} windows")
+        sys.exit(1)
 
 
 def main():
@@ -32,6 +52,9 @@ def main():
                         "cache")
     clin = os.path.join(base, "clinical_cache.npz")
     comm = os.path.join(base, "commodity_cache.npz")
+
+    check_complete(clin)
+    check_complete(comm)
 
     acc = {
         "clin_d1":  run_evaluation(clin, LinearDiscriminantAnalysis(), "within"),

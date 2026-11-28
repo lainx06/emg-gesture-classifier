@@ -176,7 +176,7 @@ Acceptance criteria were fixed before any hardware result was observed: exact ag
 \subsection{Statistical Analysis}
 To distinguish analyses specified before subsequent evaluation from later exploratory analyses, the statistical analysis plan was formally locked after an initial observation of the primary main effects.
 
-Four planned paired Wilcoxon contrasts characterized the LDA hardware-by-session cell means: clinical versus commodity on Day 1, clinical versus commodity on Day 29, Day 1 versus Day 29 under clinical acquisition, and Day 1 versus Day 29 under commodity constraints. A Bonferroni-adjusted threshold of $\alpha = 0.0125$ was applied.
+Four paired Wilcoxon contrasts characterized the LDA hardware-by-session cell means: clinical versus commodity on Day 1, clinical versus commodity on Day 29, Day 1 versus Day 29 under clinical acquisition, and Day 1 versus Day 29 under commodity constraints. A Bonferroni-adjusted threshold of $\alpha = 0.0125$ was applied.
 
 The primary analysis evaluates, separately for each model, the hardware-by-time interaction in the cross-session drop (the $2\times2$ interaction). The performance of the clinical baseline vs. commodity hardware across Sessions 1 and 3 was evaluated for all five model architectures. Significance was tested using a two-sided paired Wilcoxon signed-rank test. Confidence intervals (95\%) for the interaction were computed using a percentile bootstrap over 10,000 resamples. To correct for multiple comparisons across the five models, a Bonferroni threshold of $\alpha = \bonferroniAlpha$ was applied.
 
@@ -198,7 +198,7 @@ OpenAI ChatGPT, Anthropic Claude, and Google Gemini were used as programming ass
 \section{Results}
 
 \subsection{Baseline and Hardware--Session Effects}
-The clinical within-session accuracy was 96.2\% for LDA and 97.2\% for Random Forest. Under LDA, clinical accuracy changed from 96.2\% on Day~1 to 82.5\% on Day~29, while commodity accuracy changed from 86.1\% to 71.4\%. All four planned LDA hardware/session contrasts were significant after Bonferroni correction ($p\leq1.7\times10^{-3}$ for the least significant contrast).
+The clinical within-session accuracy was 96.2\% for LDA and 97.2\% for Random Forest. Under LDA, clinical accuracy changed from 96.2\% on Day~1 to 82.5\% on Day~29, while commodity accuracy changed from 86.1\% to 71.4\%. All four LDA hardware/session contrasts were significant after Bonferroni correction ($p\leq1.7\times10^{-3}$ for the least significant contrast).
 
 \begin{figure}[htbp]
     \centering
